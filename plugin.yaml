@@ -1,0 +1,25 @@
+name: hermes-laya
+version: 1.0.0
+manifest_version: 2
+api_version: 1
+description: >-
+  Laya System-1 typed decisions: fast local classification (choice), ordinal
+  scoring (score), and calibrated yes/no probabilities (noul) for triage,
+  routing, and risk flags. Runs on CPU via the laya package, never generates
+  text.
+author: Agus Byna
+license: Apache-2.0
+homepage: https://github.com/agusbyna/hermes-laya
+tags: [laya, triage, classification, routing, system-1, local-ml]
+provides_tools:
+  - laya_predict
+  - laya_triage
+config_schema:
+  default_model:
+    type: str
+    default: multilingual
+    description: "Checkpoint: multilingual (non-English text), english, or typed-decisions."
+  max_len:
+    type: int
+    default: 0
+    description: "0 = checkpoint default (1024 multilingual / 512 english). Raise for long texts."

@@ -1,0 +1,8 @@
+[project]
+name = "hermes-laya"
+version = "1.0.0"
+description = "Laya System-1 typed decisions for Hermes Agent"
+requires-python = ">=3.11"
+dependencies = [
+    "laya>=0.3.23,<0.4",
+]
