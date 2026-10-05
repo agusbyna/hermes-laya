@@ -40,6 +40,41 @@ Returns:
 Custom routing targets via the optional `departments` object
 (label -> gloss).
 
+### `laya_route_status`
+
+Inspect the automatic model router (it runs silently as `llm_request`
+middleware, ala omp `/jev-route auto` but with a local Laya classifier
+instead of the TypeSafe cloud API). Optional `text` probe-classifies:
+
+```json
+{ "text": "Rancang arsitektur data warehouse 5 cabang" }
+```
+
+```json
+{
+  "success": true,
+  "enabled": true,
+  "threshold": 0.6,
+  "simple_model": "",
+  "advanced_model": "",
+  "classifier": "laya-noul needs_depth (multilingual)",
+  "probe": { "route": "advanced", "p_depth": 0.93 }
+}
+```
+
+Routing rule: Laya `noul` "does this need debugging, investigation, design
+judgment, or multi-step reasoning?" — p >= threshold routes advanced,
+below routes simple. Measured 14/16 (88%) on 16 ID+EN prompts at 0.6
+(advanced 8/8, simple 6/8; the 2 misses are false-advanced on a fact
+question and a typo fix). Failure mode is safe: unknown prompts and
+classifier errors keep the current model, every decision is traced.
+Enable actual model switching with:
+
+```bash
+hermes config set plugins.entries.hermes-laya.config.route_simple_model <nama-model-murah>
+hermes config set plugins.entries.hermes-laya.config.route_advanced_model <nama-model-kuat>
+```
+
 ### `laya_predict`
 
 Full typed-decision surface — batch any mix of question types in one pass:
@@ -107,6 +142,11 @@ or the Desktop plugins tab:
 |---|---|---|
 | `default_model` | `multilingual` | checkpoint (`multilingual` / `english` / `typed-decisions`) |
 | `max_len` | `0` | state token budget; `0` = checkpoint default (1024 multilingual / 512 english) |
+| `route_enabled` | `true` | master switch for automatic `llm_request` model routing |
+| `route_threshold` | `0.6` | P(needs_depth) at/above this routes advanced (measured 14/16 = 88%) |
+| `route_simple_model` | `""` | model name for simple prompts; empty = keep current model |
+| `route_advanced_model` | `""` | model name for advanced prompts; empty = keep current model |
+| `route_max_chars` | `4000` | max prompt chars sent to the classifier |
 
 ## Bundled skill
 

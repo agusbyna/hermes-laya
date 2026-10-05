@@ -1,5 +1,5 @@
 name: hermes-laya
-version: 1.0.0
+version: 1.1.0
 manifest_version: 2
 api_version: 1
 description: >-
@@ -14,6 +14,9 @@ tags: [laya, triage, classification, routing, system-1, local-ml]
 provides_tools:
   - laya_predict
   - laya_triage
+  - laya_route_status
+provides_middleware:
+  - llm_request
 config_schema:
   default_model:
     type: str
@@ -23,3 +26,23 @@ config_schema:
     type: int
     default: 0
     description: "0 = checkpoint default (1024 multilingual / 512 english). Raise for long texts."
+  route_enabled:
+    type: bool
+    default: true
+    description: "Master switch for automatic llm_request model routing."
+  route_threshold:
+    type: float
+    default: 0.6
+    description: "P(needs_depth) at or above this routes to the advanced model. Measured 14/16 (88%) on 16 ID+EN prompts."
+  route_simple_model:
+    type: str
+    default: ""
+    description: "Model name for simple prompts. Empty = keep the current model."
+  route_advanced_model:
+    type: str
+    default: ""
+    description: "Model name for advanced prompts. Empty = keep the current model."
+  route_max_chars:
+    type: int
+    default: 4000
+    description: "Max prompt chars sent to the classifier."

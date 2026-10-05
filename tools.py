@@ -7,6 +7,10 @@ import time
 _router = None
 _load_error = None
 
+# Diset oleh register(): ctx plugin agar middleware llm_request (yang tidak
+# menerima ctx) bisa membaca config routing. None = pakai default.
+_route_ctx = None
+
 URGENCY_INSTRUCTIONS = (
     "How urgent is this? A mentioned date or time never raises urgency by "
     "itself; rate by harm if nothing is done."

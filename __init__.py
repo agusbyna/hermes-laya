@@ -8,7 +8,12 @@ from pathlib import Path
 
 
 def register(ctx):
-    from . import schemas, tools
+    from . import router, schemas, tools
+
+    # Middleware routing butuh ctx untuk baca config; disimpan di tools agar
+    # handler middleware (tanpa akses ctx) bisa membacanya.
+    tools._route_ctx = ctx
+    ctx.register_middleware("llm_request", router.route_middleware)
 
     ctx.register_tool(
         name="laya_predict",
@@ -21,6 +26,12 @@ def register(ctx):
         toolset="laya",
         schema=schemas.LAYA_TRIAGE,
         handler=lambda args, **kw: tools.laya_triage(args, ctx=ctx, **kw),
+    )
+    ctx.register_tool(
+        name="laya_route_status",
+        toolset="laya",
+        schema=router.ROUTE_STATUS_SCHEMA,
+        handler=lambda args, **kw: router.route_status(args, ctx=ctx, **kw),
     )
 
     # Bundle skills: read-only, loaded later via skill_view("<plugin>:<dir>").
